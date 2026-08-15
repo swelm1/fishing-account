@@ -1,33 +1,411 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0f172a"><title>حسابات الصيد</title><style>
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;background:#f1f5f9;color:#0f172a}header{background:#0f172a;color:#fff;padding:22px 18px;border-radius:0 0 22px 22px}h1{margin:0 0 5px;font-size:25px}.sub{opacity:.75;font-size:13px}main{max-width:760px;margin:auto;padding:14px}nav{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:14px;position:sticky;top:0;z-index:20;padding:8px 0;background:#f1f5f9}.tab,.filter button{border:1px solid #cbd5e1;background:#fff;border-radius:11px;padding:10px 4px;font-weight:700;color:#475569}.tab.active,.filter button.active{background:#0f172a;color:#fff}section{display:none}.active-section{display:block}.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}.card,.panel{background:#fff;border-radius:16px;padding:15px;margin-bottom:12px}.label,label{font-size:13px;color:#475569}.num{font-size:22px;font-weight:800;margin-top:5px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}input{width:100%;margin-top:6px;padding:12px;border:1px solid #cbd5e1;border-radius:11px;font-size:16px;background:#fff}button.primary{width:100%;margin-top:12px;border:0;background:#0f172a;color:#fff;padding:13px;border-radius:11px;font-size:16px;font-weight:800}.list{margin-top:12px}.item{border-top:1px solid #e2e8f0;padding:12px 0;display:flex;justify-content:space-between;gap:10px}.item small{display:block;color:#64748b;margin-top:4px}.amount{font-weight:800;white-space:nowrap}.danger{border:0;background:#fee2e2;color:#991b1b;padding:8px 10px;border-radius:9px}.filter{display:flex;gap:7px}.filter button{flex:1}.backup{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:10px}.backup h3{margin:0 0 5px;font-size:15px}.backup p{margin:0 0 8px;color:#64748b;font-size:11px}.backup-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.backup button,.backup label{border:0;background:#0f172a;color:#fff;padding:9px;border-radius:9px;text-align:center;font-size:12px;font-weight:700}.backup input{display:none}.search input{margin-top:0}.invoice img{max-width:130px;max-height:130px;margin-top:8px;border-radius:9px}.receivable{font-size:12px;color:#92400e;background:#fef3c7;padding:5px;border-radius:7px;display:inline-block;margin-top:5px}.paid{font-size:12px;color:#166534;background:#dcfce7;padding:5px;border-radius:7px;display:inline-block;margin-top:5px}@media(max-width:420px){.row{grid-template-columns:1fr}nav{font-size:10px}}
-</style></head><body><header><h1>🎣 حسابات الصيد</h1><div class="sub">المزاد والمصروفات والصيانة والربح</div></header><main>
-<nav><button class="tab active" data-tab="home">الرئيسية</button><button class="tab" data-tab="sales">🔨 المزاد</button><button class="tab" data-tab="office">🏢 المكتب</button><button class="tab" data-tab="expenses">💸 المصروفات</button><button class="tab" data-tab="maintenance">🔧 الصيانة</button><button class="tab" data-tab="traps">🪤 القراقير</button></nav>
-<section id="home" class="active-section"><div class="cards"><div class="card"><div class="label">إجمالي المبيعات</div><div class="num" id="salesTotal">0.000 د.ك</div></div><div class="card"><div class="label">المصروفات + القراقير</div><div class="num" id="expensesTotal">0.000 د.ك</div></div><div class="card"><div class="label">الصيانة</div><div class="num" id="maintenanceTotal">0.000 د.ك</div></div><div class="card"><div class="label">صافي الربح</div><div class="num" id="profitTotal">0.000 د.ك</div></div></div>
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0f172a">
+<title>حسابات الصيد</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;background:#f1f5f9;color:#0f172a}
+header{background:#0f172a;color:#fff;padding:22px 18px;border-radius:0 0 22px 22px}
+h1{margin:0 0 5px;font-size:25px}.sub{opacity:.75;font-size:13px}
+main{max-width:760px;margin:auto;padding:14px}
+nav{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;padding:8px 0;background:#f1f5f9}
+.tab,.filter button{border:1px solid #cbd5e1;background:#fff;border-radius:11px;padding:11px 5px;font-weight:700;color:#475569}
+.tab.active,.filter button.active{background:#0f172a;color:#fff}
+section{display:none}.active-section{display:block}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card,.panel{background:#fff;border-radius:16px;padding:15px;margin-bottom:12px}
+.label,label{font-size:13px;color:#475569}.num{font-size:22px;font-weight:800;margin-top:5px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+input{width:100%;margin-top:6px;padding:12px;border:1px solid #cbd5e1;border-radius:11px;font-size:16px;background:#fff}
+button.primary{width:100%;margin-top:12px;border:0;background:#0f172a;color:#fff;padding:13px;border-radius:11px;font-size:16px;font-weight:800}
+.list{margin-top:12px}.item{border-top:1px solid #e2e8f0;padding:12px 0;display:flex;justify-content:space-between;gap:10px}
+.item small{display:block;color:#64748b;margin-top:4px}.amount{font-weight:800;white-space:nowrap}
+.danger{border:0;background:#fee2e2;color:#991b1b;padding:8px 10px;border-radius:9px;margin-top:7px}
+.filter{display:flex;gap:7px}.filter button{flex:1}
+.backup{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:10px}
+.backup h3{margin:0 0 5px;font-size:15px}.backup p{margin:0 0 8px;color:#64748b;font-size:11px}
+.backup-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.backup button,.backup label{border:0;background:#0f172a;color:#fff;padding:9px;border-radius:9px;text-align:center;font-size:12px;font-weight:700}
+.backup input{display:none}.search input{margin-top:0}
+.invoice img{max-width:130px;max-height:130px;margin-top:8px;border-radius:9px}
+.receivable{font-size:12px;color:#92400e;background:#fef3c7;padding:5px;border-radius:7px;display:inline-block;margin-top:5px}
+.paid{font-size:12px;color:#166534;background:#dcfce7;padding:5px;border-radius:7px;display:inline-block;margin-top:5px}
+.badge{font-size:12px;background:#e2e8f0;color:#334155;padding:5px;border-radius:7px;display:inline-block;margin-top:5px}
+@media(max-width:420px){.row{grid-template-columns:1fr}nav{font-size:11px}}
+</style>
+</head>
+<body>
+<header>
+<h1>🎣 حسابات الصيد</h1>
+<div class="sub">المزاد والمصروفات والصيانة والربح</div>
+</header>
 
-<div class="panel"><label>عرض حسب الفترة</label><div class="filter" id="periods"><button class="active" data-p="all">الكل</button><button data-p="day">اليوم</button><button data-p="month">الشهر</button><button data-p="year">السنة</button></div></div><div class="backup"><h3>💾 حفظ البيانات</h3><p>البيانات تحفظ تلقائيًا على هذا الموقع في جهازك، ويمكنك أخذ نسخة احتياطية.</p><div class="backup-actions"><button onclick="backupData()">💾 نسخ احتياطي</button><label>📂 استرجاع نسخة<input type="file" accept=".json" onchange="restoreData(event)"></label></div></div></section>
-<section id="sales"><div class="panel"><h2>🔨 المزاد</h2><div class="row"><div><label>التاريخ</label><input id="saleDate" type="date"></div><div><label>نوع البيع</label><input id="saleType" placeholder="نوع البيع"></div></div><div class="row"><div><label>إجمالي مبلغ البيع</label><input id="saleAmount" type="number" step=".001" min="0"></div><div><label>المبلغ المستلم</label><input id="saleReceived" type="number" step=".001" min="0"></div></div><div class="row"><div><label>المتبقي عند المكتب</label><input id="saleRemaining" readonly></div><div><label>رقم الفاتورة</label><input id="saleInvoice" placeholder="رقم الفاتورة"></div></div><label>صورة الفاتورة<input id="saleImage" type="file" accept="image/*"></label><button class="primary" onclick="addSale()">إضافة بيع</button></div><div class="panel"><label>🔎 بحث برقم الفاتورة</label><div class="search"><input id="invoiceSearch" placeholder="رقم الفاتورة"></div><div id="salesList" class="list"></div></div></section>
-<section id="office"><div class="panel"><h2>🏢 المكتب</h2><p class="muted">كل تفاصيل الفواتير الخاصة بالمكتب: المستلم، والباقي عند المكتب، والفواتير غير المستلمة.</p><div class="cards"><div class="card"><div class="label">إجمالي الفواتير</div><div class="num" id="officeTotalInvoices">0</div></div><div class="card"><div class="label">المستلم من المكتب</div><div class="num" id="officeReceived">0.000 د.ك</div></div><div class="card"><div class="label">الباقي عند المكتب</div><div class="num" id="officeRemaining">0.000 د.ك</div></div><div class="card"><div class="label">فواتير غير مستلمة</div><div class="num" id="officeUnpaid">0</div></div></div><div class="panel"><label>🔎 بحث برقم الفاتورة</label><div class="search"><input id="officeSearch" placeholder="رقم الفاتورة"></div></div><div class="panel"><h3>📋 التفاصيل</h3><div id="officeList" class="list"></div></div></section>
-<section id="expenses"><div class="panel"><h2>💸 المصروفات</h2><div class="row"><div><label>التاريخ</label><input id="expenseDate" type="date"></div><div><label>نوع المصروف</label><input id="expenseType" placeholder="نوع المصروف"></div></div><label>المبلغ<input id="expenseAmount" type="number" step=".001" min="0"></label><button class="primary" onclick="addSimple('expenses')">إضافة مصروف</button></div><div class="panel"><div id="expensesList" class="list"></div></div></section>
-<section id="maintenance"><div class="panel"><h2>🔧 الصيانة</h2><div class="row"><div><label>التاريخ</label><input id="maintenanceDate" type="date"></div><div><label>نوع الصيانة</label><input id="maintenanceType" placeholder="نوع الصيانة"></div></div><label>المبلغ<input id="maintenanceAmount" type="number" step=".001" min="0"></label><button class="primary" onclick="addSimple('maintenance')">إضافة صيانة</button></div><div class="panel"><div id="maintenanceList" class="list"></div></div></section>
-<section id="traps"><div class="panel"><h2>🪤 القراقير</h2><div class="row"><div><label>تاريخ الشراء</label><input id="trapDate" type="date"></div><div><label>نوع القرقور</label><input id="trapType" placeholder="نوع القرقور"></div></div><div class="row"><div><label>العدد</label><input id="trapQty" type="number" min="1"></div><div><label>إجمالي مبلغ الشراء</label><input id="trapAmount" type="number" step=".001" min="0"></div></div><button class="primary" onclick="addSimple('traps')">إضافة شراء</button></div><div class="panel"><div id="trapsList" class="list"></div></div></section>
-</main><script>
-const key="fishing_accounts_v1";let db=JSON.parse(localStorage.getItem(key)||'{"sales":[],"expenses":[],"maintenance":[],"traps":[]}'),period="all",invoiceQuery="";const $=id=>document.getElementById(id),fmt=n=>Number(n||0).toFixed(3)+" د.ك";const save=()=>localStorage.setItem(key,JSON.stringify(db));const today=()=>new Date().toISOString().slice(0,10);document.querySelectorAll('input[type=date]').forEach(x=>x.value=today());
-function inPeriod(s){if(period==="all")return true;let d=new Date(s+"T00:00:00"),n=new Date();return period==="day"?d.toDateString()===n.toDateString():period==="month"?d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth():d.getFullYear()===n.getFullYear()}
-function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
-function hijri(s){try{return new Intl.DateTimeFormat("ar-KW-u-ca-islamic",{day:"numeric",month:"long",year:"numeric"}).format(new Date(s+"T00:00:00"))}catch(e){return""}}
-$("saleAmount").addEventListener("input",remain);$("saleReceived").addEventListener("input",remain);function remain(){$("saleRemaining").value=Math.max(0,(+$("saleAmount").value||0)-($("saleReceived").value||0)).toFixed(3)}
-function readImg(f){return new Promise(r=>{if(!f)return r("");let x=new FileReader();x.onload=()=>r(x.result);x.readAsDataURL(f)})}
-async function addSale(){let date=$("saleDate").value,type=$("saleType").value.trim()||"بيع",amount=+$("saleAmount").value,received=+$("saleReceived").value||0;if(!date||!amount||received<0||received>amount)return alert("تأكد من المبلغ المستلم.");let image=await readImg($("saleImage").files[0]);db.sales.unshift({id:Date.now(),date,type,amount,received,remaining:+(amount-received).toFixed(3),invoice:$("saleInvoice").value.trim(),image});save();clearSale();render()}
-function clearSale(){["saleType","saleAmount","saleReceived","saleRemaining","saleInvoice"].forEach(id=>$(id).value="");$("saleImage").value=""}
-function addSimple(type){let m={expenses:["expenseDate","expenseAmount","expenseType"],maintenance:["maintenanceDate","maintenanceAmount","maintenanceType"],traps:["trapDate","trapAmount","trapType"]}[type],date=$(m[0]).value,amount=+$(m[1]).value;if(!date||!amount)return alert("أدخل التاريخ والمبلغ");let o={id:Date.now(),date,amount,type:$(m[2]).value.trim()||type};if(type==="traps"){o.qty=+$("trapQty").value||0;if(!o.qty)return alert("أدخل العدد")}db[type].unshift(o);save();$(m[1]).value="";$(m[2]).value="";if(type==="traps")$("trapQty").value="";render()}
-function del(t,id){db[t]=db[t].filter(x=>x.id!==id);save();render()}
-function simpleList(t,id){let a=db[t].filter(x=>inPeriod(x.date));$(id).innerHTML=a.length?a.map(x=>`<div class="item"><div><b>${esc(x.type)}</b><small>${x.date} — ${hijri(x.date)}${t==="traps"?" — العدد: "+x.qty:""}</small></div><div><div class="amount">${fmt(x.amount)}</div><button class="danger" onclick="del('${t}',${x.id})">حذف</button></div></div>`).join(""):'<div class="empty">لا توجد عمليات</div>'}
-function salesList(){let a=db.sales.filter(x=>inPeriod(x.date));if(invoiceQuery)a=a.filter(x=>(x.invoice||"").includes(invoiceQuery));$("salesList").innerHTML=a.length?a.map(x=>`<div class="item"><div><b>${esc(x.type)}</b><small>${x.date} — ${hijri(x.date)}</small><small>الفاتورة: ${esc(x.invoice)||"بدون رقم"}</small>${x.remaining?`<span class="receivable">باقي عند المكتب: ${fmt(x.remaining)}</span>`:'<span class="paid">تم استلام كامل المبلغ</span>'}${x.image?`<div class="invoice"><img src="${x.image}" alt="الفاتورة"></div>`:""}</div><div><div class="amount">${fmt(x.amount)}</div><small>المستلم: ${fmt(x.received)}</small><button class="danger" onclick="del('sales',${x.id})">حذف</button></div></div>`).join(""):'<div class="empty">لا توجد مبيعات مطابقة</div>'}
-function unpaidList(a,id){$(id).innerHTML=a.length?a.map(x=>`<div class="item"><div><b>فاتورة: ${esc(x.invoice)||"بدون رقم"}</b><small>${x.date} — ${hijri(x.date)} — ${esc(x.type)}</small><span class="receivable">الباقي عند المكتب: ${fmt(x.remaining)}</span>${x.image?`<div class="invoice"><img src="${x.image}" alt="الفاتورة"></div>`:""}</div><div><div class="amount">${fmt(x.amount)}</div><small>المستلم: ${fmt(x.received)}</small></div></div>`).join(""):'<div class="empty">لا توجد فواتير غير مستلمة 🎉</div>’}
-function officeList(){let q=($("officeSearch")?.value||"").trim();let a=db.sales.filter(x=>inPeriod(x.date)&&(!q||String(x.invoice||"").includes(q)));$("officeTotalInvoices").textContent=a.length;let received=a.reduce((n,x)=>n+(+x.received||0),0),remaining=a.reduce((n,x)=>n+(+x.remaining||0),0);$("officeReceived").textContent=fmt(received);$("officeRemaining").textContent=fmt(remaining);$("officeUnpaid").textContent=a.filter(x=>(+x.remaining||0)>0).length;$("officeList").innerHTML=a.length?a.map(x=>`<div class="item"><div><b>فاتورة: ${esc(x.invoice)||"بدون رقم"}</b><small>${x.date} — ${hijri(x.date)} — ${esc(x.type)}</small><div>إجمالي البيع: <strong>${fmt(x.amount)}</strong></div><div>المستلم من المكتب: <strong>${fmt(x.received)}</strong></div><div class="receivable">الباقي عند المكتب: <strong>${fmt(x.remaining)}</strong></div><div>${(+x.remaining||0)>0?'<span class="badge">غير مستلمة بالكامل</span>':'<span class="badge">مستلمة بالكامل</span>'}</div>${x.image?`<div class="invoice"><img src="${x.image}" alt="الفاتورة"></div>`:""}</div></div>`).join(""):'<div class="empty">لا توجد فواتير</div>'}
-function render(){let s=["sales","expenses","maintenance","traps"],v=Object.fromEntries(s.map(t=>[t,db[t].filter(x=>inPeriod(x.date)).reduce((a,x)=>a+(+x.amount||0),0)]));let sales=db.sales.filter(x=>inPeriod(x.date)),received=sales.reduce((a,x)=>a+(+x.received||0),0),remaining=sales.reduce((a,x)=>a+(+x.remaining||0),0),unpaid=sales.filter(x=>(+x.remaining||0)>0);$("salesTotal").textContent=fmt(v.sales);$("expensesTotal").textContent=fmt(v.expenses+v.traps);$("maintenanceTotal").textContent=fmt(v.maintenance);$("profitTotal").textContent=fmt(v.sales-v.expenses-v.maintenance-v.traps);officeList();salesList();simpleList("expenses","expensesList");simpleList("maintenance","maintenanceList");simpleList("traps","trapsList")}
-document.getElementById("officeSearch").addEventListener("input",officeList);document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll("section").forEach(x=>x.classList.remove("active-section"));$(b.dataset.tab).classList.add("active-section")});document.querySelectorAll("#periods button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#periods button").forEach(x=>x.classList.remove("active"));b.classList.add("active");period=b.dataset.p;render()});$("invoiceSearch").oninput=e=>{invoiceQuery=e.target.value.trim();salesList()}
-function backupData(){let b=new Blob([JSON.stringify({version:2,data:db},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="حسابات_الصيد_نسخة_احتياطية.json";a.click()}
-function restoreData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let o=JSON.parse(r.result),d=o.data||o;if(!d.sales||!d.expenses||!d.maintenance||!d.traps)throw 0;if(confirm("استبدال البيانات الحالية؟")){db=d;save();render();alert("تم الاسترجاع")}}catch(e){alert("ملف غير صالح")}};r.readAsText(f)}
+<main>
+<nav>
+<button class="tab active" data-tab="home">الرئيسية</button>
+<button class="tab" data-tab="sales">🔨 المزاد</button>
+<button class="tab" data-tab="office">🏢 المكتب</button>
+<button class="tab" data-tab="expenses">💸 المصروفات</button>
+<button class="tab" data-tab="maintenance">🔧 الصيانة</button>
+<button class="tab" data-tab="traps">🪤 القراقير</button>
+</nav>
+
+<section id="home" class="active-section">
+<div class="cards">
+<div class="card"><div class="label">إجمالي المبيعات</div><div class="num" id="salesTotal">0.000 د.ك</div></div>
+<div class="card"><div class="label">المصروفات + القراقير</div><div class="num" id="expensesTotal">0.000 د.ك</div></div>
+<div class="card"><div class="label">الصيانة</div><div class="num" id="maintenanceTotal">0.000 د.ك</div></div>
+<div class="card"><div class="label">صافي الربح</div><div class="num" id="profitTotal">0.000 د.ك</div></div>
+</div>
+
+<div class="panel">
+<label>عرض حسب الفترة</label>
+<div class="filter" id="periods">
+<button class="active" data-p="all">الكل</button>
+<button data-p="day">اليوم</button>
+<button data-p="month">الشهر</button>
+<button data-p="year">السنة</button>
+</div>
+</div>
+
+<div class="backup">
+<h3>💾 حفظ البيانات</h3>
+<p>البيانات تحفظ تلقائياً على هذا الجهاز. خذ نسخة احتياطية عند الحاجة.</p>
+<div class="backup-actions">
+<button onclick="backupData()">💾 نسخ احتياطي</button>
+<label>📂 استرجاع نسخة<input type="file" accept=".json" onchange="restoreData(event)"></label>
+</div>
+</div>
+</section>
+
+<section id="sales">
+<div class="panel">
+<h2>🔨 المزاد</h2>
+<div class="row">
+<div><label>التاريخ</label><input id="saleDate" type="date"></div>
+<div><label>نوع البيع</label><input id="saleType" placeholder="نوع البيع"></div>
+</div>
+<div class="row">
+<div><label>إجمالي مبلغ البيع</label><input id="saleAmount" type="number" step=".001" min="0"></div>
+<div><label>المبلغ المستلم</label><input id="saleReceived" type="number" step=".001" min="0"></div>
+</div>
+<div class="row">
+<div><label>المتبقي عند المكتب</label><input id="saleRemaining" readonly></div>
+<div><label>رقم الفاتورة</label><input id="saleInvoice" placeholder="رقم الفاتورة"></div>
+</div>
+<label>صورة الفاتورة<input id="saleImage" type="file" accept="image/*"></label>
+<button class="primary" onclick="addSale()">إضافة بيع</button>
+</div>
+
+<div class="panel">
+<label>🔎 بحث برقم الفاتورة</label>
+<div class="search"><input id="invoiceSearch" placeholder="رقم الفاتورة"></div>
+<div id="salesList" class="list"></div>
+</div>
+</section>
+
+<section id="office">
+<div class="panel">
+<h2>🏢 المكتب</h2>
+<p>هنا تظهر تفاصيل المكتب فقط: المبلغ المستلم، والباقي عند المكتب، والفواتير غير المستلمة بالكامل.</p>
+<div class="cards">
+<div class="card"><div class="label">إجمالي الفواتير</div><div class="num" id="officeTotalInvoices">0</div></div>
+<div class="card"><div class="label">المستلم من المكتب</div><div class="num" id="officeReceived">0.000 د.ك</div></div>
+<div class="card"><div class="label">الباقي عند المكتب</div><div class="num" id="officeRemaining">0.000 د.ك</div></div>
+<div class="card"><div class="label">فواتير غير مستلمة</div><div class="num" id="officeUnpaid">0</div></div>
+</div>
+</div>
+
+<div class="panel">
+<label>🔎 بحث برقم الفاتورة</label>
+<div class="search"><input id="officeSearch" placeholder="رقم الفاتورة"></div>
+</div>
+
+<div class="panel">
+<h3>📋 تفاصيل المكتب</h3>
+<div id="officeList" class="list"></div>
+</div>
+</section>
+
+<section id="expenses">
+<div class="panel">
+<h2>💸 المصروفات</h2>
+<div class="row">
+<div><label>التاريخ</label><input id="expenseDate" type="date"></div>
+<div><label>نوع المصروف</label><input id="expenseType" placeholder="نوع المصروف"></div>
+</div>
+<label>المبلغ<input id="expenseAmount" type="number" step=".001" min="0"></label>
+<button class="primary" onclick="addSimple('expenses')">إضافة مصروف</button>
+</div>
+<div class="panel"><div id="expensesList" class="list"></div></div>
+</section>
+
+<section id="maintenance">
+<div class="panel">
+<h2>🔧 الصيانة</h2>
+<div class="row">
+<div><label>التاريخ</label><input id="maintenanceDate" type="date"></div>
+<div><label>نوع الصيانة</label><input id="maintenanceType" placeholder="نوع الصيانة"></div>
+</div>
+<label>المبلغ<input id="maintenanceAmount" type="number" step=".001" min="0"></label>
+<button class="primary" onclick="addSimple('maintenance')">إضافة صيانة</button>
+</div>
+<div class="panel"><div id="maintenanceList" class="list"></div></div>
+</section>
+
+<section id="traps">
+<div class="panel">
+<h2>🪤 القراقير</h2>
+<div class="row">
+<div><label>تاريخ الشراء</label><input id="trapDate" type="date"></div>
+<div><label>نوع القرقور</label><input id="trapType" placeholder="نوع القرقور"></div>
+</div>
+<div class="row">
+<div><label>العدد</label><input id="trapQty" type="number" min="1"></div>
+<div><label>إجمالي مبلغ الشراء</label><input id="trapAmount" type="number" step=".001" min="0"></div>
+</div>
+<button class="primary" onclick="addSimple('traps')">إضافة شراء</button>
+</div>
+<div class="panel"><div id="trapsList" class="list"></div></div>
+</section>
+</main>
+
+<script>
+const key="fishing_accounts_v2";
+let db=JSON.parse(localStorage.getItem(key)||'{"sales":[],"expenses":[],"maintenance":[],"traps":[]}');
+let period="all",invoiceQuery="";
+
+const $=id=>document.getElementById(id);
+const fmt=n=>Number(n||0).toFixed(3)+" د.ك";
+const save=()=>localStorage.setItem(key,JSON.stringify(db));
+const today=()=>new Date().toISOString().slice(0,10);
+
+document.querySelectorAll('input[type="date"]').forEach(x=>x.value=today());
+
+function inPeriod(s){
+ if(period==="all") return true;
+ const d=new Date(s+"T00:00:00"), n=new Date();
+ if(period==="day") return d.toDateString()===n.toDateString();
+ if(period==="month") return d.getFullYear()===n.getFullYear() && d.getMonth()===n.getMonth();
+ return d.getFullYear()===n.getFullYear();
+}
+
+function esc(s){
+ return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+}
+
+function hijri(s){
+ try{
+  return new Intl.DateTimeFormat("ar-KW-u-ca-islamic",{day:"numeric",month:"long",year:"numeric"}).format(new Date(s+"T00:00:00"));
+ }catch(e){return "";}
+}
+
+$("saleAmount").addEventListener("input",remain);
+$("saleReceived").addEventListener("input",remain);
+
+function remain(){
+ const total=Number($("saleAmount").value)||0;
+ const received=Number($("saleReceived").value)||0;
+ $("saleRemaining").value=Math.max(0,total-received).toFixed(3);
+}
+
+function readImg(f){
+ return new Promise(resolve=>{
+  if(!f)return resolve("");
+  const r=new FileReader();
+  r.onload=()=>resolve(r.result);
+  r.readAsDataURL(f);
+ });
+}
+
+async function addSale(){
+ const date=$("saleDate").value;
+ const type=$("saleType").value.trim()||"بيع";
+ const amount=Number($("saleAmount").value)||0;
+ const received=Number($("saleReceived").value)||0;
+
+ if(!date||amount<=0||received<0||received>amount){
+  alert("تأكد من التاريخ والمبلغ المستلم.");
+  return;
+ }
+
+ const image=await readImg($("saleImage").files[0]);
+
+ db.sales.unshift({
+  id:Date.now(),date,type,amount,received,
+  remaining:Number((amount-received).toFixed(3)),
+  invoice:$("saleInvoice").value.trim(),
+  image
+ });
+
+ save();
+ ["saleType","saleAmount","saleReceived","saleRemaining","saleInvoice"].forEach(id=>$(id).value="");
+ $("saleImage").value="";
+ render();
+}
+
+function addSimple(type){
+ const map={
+  expenses:["expenseDate","expenseAmount","expenseType"],
+  maintenance:["maintenanceDate","maintenanceAmount","maintenanceType"],
+  traps:["trapDate","trapAmount","trapType"]
+ };
+ const m=map[type],date=$(m[0]).value,amount=Number($(m[1]).value)||0;
+ if(!date||amount<=0){alert("أدخل التاريخ والمبلغ.");return;}
+
+ const o={id:Date.now(),date,amount,type:$(m[2]).value.trim()||type};
+
+ if(type==="traps"){
+  o.qty=Number($("trapQty").value)||0;
+  if(o.qty<=0){alert("أدخل العدد.");return;}
+  $("trapQty").value="";
+ }
+
+ db[type].unshift(o);
+ save();
+ $(m[1]).value="";
+ $(m[2]).value="";
+ render();
+}
+
+function del(t,id){
+ if(!confirm("حذف هذه العملية؟"))return;
+ db[t]=db[t].filter(x=>x.id!==id);
+ save();
+ render();
+}
+
+function simpleList(t,id){
+ const a=db[t].filter(x=>inPeriod(x.date));
+ $(id).innerHTML=a.length?a.map(x=>`
+ <div class="item">
+  <div><b>${esc(x.type)}</b><small>${x.date} — ${hijri(x.date)}${t==="traps"?" — العدد: "+x.qty:""}</small></div>
+  <div><div class="amount">${fmt(x.amount)}</div><button class="danger" onclick="del('${t}',${x.id})">حذف</button></div>
+ </div>`).join(""):'<div>لا توجد عمليات</div>';
+}
+
+function salesList(){
+ let a=db.sales.filter(x=>inPeriod(x.date));
+ if(invoiceQuery)a=a.filter(x=>String(x.invoice||"").includes(invoiceQuery));
+
+ $("salesList").innerHTML=a.length?a.map(x=>`
+ <div class="item">
+  <div>
+   <b>${esc(x.type)}</b>
+   <small>${x.date} — ${hijri(x.date)}</small>
+   <small>الفاتورة: ${esc(x.invoice)||"بدون رقم"}</small>
+   ${x.remaining>0?`<span class="receivable">باقي عند المكتب: ${fmt(x.remaining)}</span>`:`<span class="paid">تم استلام كامل المبلغ</span>`}
+   ${x.image?`<div class="invoice"><img src="${x.image}" alt="الفاتورة"></div>`:""}
+  </div>
+  <div>
+   <div class="amount">${fmt(x.amount)}</div>
+   <small>المستلم: ${fmt(x.received)}</small>
+   <button class="danger" onclick="del('sales',${x.id})">حذف</button>
+  </div>
+ </div>`).join(""):'<div>لا توجد مبيعات مطابقة</div>';
+}
+
+function officeList(){
+ const q=($("officeSearch").value||"").trim();
+ const a=db.sales.filter(x=>inPeriod(x.date)&&(!q||String(x.invoice||"").includes(q)));
+
+ $("officeTotalInvoices").textContent=a.length;
+ $("officeReceived").textContent=fmt(a.reduce((n,x)=>n+(Number(x.received)||0),0));
+ $("officeRemaining").textContent=fmt(a.reduce((n,x)=>n+(Number(x.remaining)||0),0));
+ $("officeUnpaid").textContent=a.filter(x=>(Number(x.remaining)||0)>0).length;
+
+ $("officeList").innerHTML=a.length?a.map(x=>`
+ <div class="item">
+  <div>
+   <b>فاتورة: ${esc(x.invoice)||"بدون رقم"}</b>
+   <small>${x.date} — ${hijri(x.date)} — ${esc(x.type)}</small>
+   <div>إجمالي البيع: <strong>${fmt(x.amount)}</strong></div>
+   <div>المستلم من المكتب: <strong>${fmt(x.received)}</strong></div>
+   <div>${x.remaining>0
+     ?`<span class="receivable">الباقي عند المكتب: <strong>${fmt(x.remaining)}</strong></span>`
+     :`<span class="paid">تم استلام كامل المبلغ</span>`}</div>
+   ${x.image?`<div class="invoice"><img src="${x.image}" alt="الفاتورة"></div>`:""}
+  </div>
+ </div>`).join(""):'<div>لا توجد فواتير</div>';
+}
+
+function render(){
+ const sales=db.sales.filter(x=>inPeriod(x.date));
+ const expenses=db.expenses.filter(x=>inPeriod(x.date));
+ const maintenance=db.maintenance.filter(x=>inPeriod(x.date));
+ const traps=db.traps.filter(x=>inPeriod(x.date));
+
+ const salesTotal=sales.reduce((a,x)=>a+(Number(x.amount)||0),0);
+ const expensesTotal=expenses.reduce((a,x)=>a+(Number(x.amount)||0),0);
+ const maintenanceTotal=maintenance.reduce((a,x)=>a+(Number(x.amount)||0),0);
+ const trapsTotal=traps.reduce((a,x)=>a+(Number(x.amount)||0),0);
+
+ $("salesTotal").textContent=fmt(salesTotal);
+ $("expensesTotal").textContent=fmt(expensesTotal+trapsTotal);
+ $("maintenanceTotal").textContent=fmt(maintenanceTotal);
+ $("profitTotal").textContent=fmt(salesTotal-expensesTotal-maintenanceTotal-trapsTotal);
+
+ salesList();
+ officeList();
+ simpleList("expenses","expensesList");
+ simpleList("maintenance","maintenanceList");
+ simpleList("traps","trapsList");
+}
+
+document.querySelectorAll(".tab").forEach(b=>{
+ b.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+  document.querySelectorAll("section").forEach(x=>x.classList.remove("active-section"));
+  $(b.dataset.tab).classList.add("active-section");
+ };
+});
+
+document.querySelectorAll("#periods button").forEach(b=>{
+ b.onclick=()=>{
+  document.querySelectorAll("#periods button").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+  period=b.dataset.p;
+  render();
+ };
+});
+
+$("invoiceSearch").addEventListener("input",e=>{
+ invoiceQuery=e.target.value.trim();
+ salesList();
+});
+
+$("officeSearch").addEventListener("input",officeList);
+
+function backupData(){
+ const blob=new Blob([JSON.stringify({version:2,data:db},null,2)],{type:"application/json"});
+ const a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);
+ a.download="حسابات_الصيد_نسخة_احتياطية.json";
+ a.click();
+ URL.revokeObjectURL(a.href);
+}
+
+function restoreData(e){
+ const f=e.target.files[0];
+ if(!f)return;
+ const r=new FileReader();
+ r.onload=()=>{
+  try{
+   const o=JSON.parse(r.result),d=o.data||o;
+   if(!d.sales||!d.expenses||!d.maintenance||!d.traps)throw new Error();
+   if(confirm("استبدال البيانات الحالية؟")){
+    db=d;save();render();alert("تم الاسترجاع");
+   }
+  }catch(err){alert("ملف غير صالح");}
+ };
+ r.readAsText(f);
+}
+
 render();
-</script></body></html>
+</script>
+</body>
+</html>
