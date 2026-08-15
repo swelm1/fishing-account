@@ -1,0 +1,10 @@
+{
+  "name": "حسابات الصيد",
+  "short_name": "حسابات الصيد",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f1f5f9",
+  "theme_color": "#0f172a",
+  "lang": "ar",
+  "dir": "rtl"
+}
