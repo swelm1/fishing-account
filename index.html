@@ -127,7 +127,7 @@ $('addTrap').onclick=()=>addSimple('traps','trapDate','trapType','trapAmount','t
 function salesList(){
  const q=$('salesSearch').value.trim();
  const a=db.sales.filter(x=>String(x.invoice||'').includes(q));
- $('salesList').innerHTML=a.length?a.map(x=>`<div class="item"><b>فاتورة: ${esc(x.invoice)||'بدون رقم'}</b><br>الإجمالي: ${fmt(x.amount)}<br>المستلم: ${fmt(x.received)}<br><span class="${x.remaining?'warn':'ok'}">${x.remaining?'الباقي عند المكتب: '+fmt(x.remaining):'تم استلام كامل المبلغ'}</span></div>`).join(''):'لا توجد فواتير';
+ $('salesList').innerHTML=a.length?a.map(x=>`<div class="item"><b>فاتورة: ${esc(x.invoice)||'بدون رقم'}</b><br>التاريخ: ${esc(x.date)}<br>النوع: ${esc(x.type)}<br>الإجمالي: ${fmt(x.amount)}<br>المستلم: ${fmt(x.received)}<br><span class="${x.remaining?'warn':'ok'}">${x.remaining?'الباقي عند المكتب: '+fmt(x.remaining):'تم استلام كامل المبلغ'}</span><div style="margin-top:7px;display:flex;gap:7px"><button class="primary" style="width:auto;padding:8px 12px" onclick="editSale(${x.id})">✏️ تعديل</button><button class="primary" style="width:auto;padding:8px 12px;background:#991b1b" onclick="deleteItem('sales',${x.id})">🗑️ حذف</button></div></div>`).join(''):'لا توجد فواتير';
 }
 function officeList(){
  const q=$('officeSearch').value.trim();
@@ -136,13 +136,39 @@ function officeList(){
  $('officeReceived').textContent=fmt(a.reduce((n,x)=>n+(Number(x.received)||0),0));
  $('officeRemaining').textContent=fmt(a.reduce((n,x)=>n+(Number(x.remaining)||0),0));
  $('officeUnpaid').textContent=a.filter(x=>(Number(x.remaining)||0)>0).length;
- $('officeList').innerHTML=a.length?a.map(x=>`<div class="item"><b>فاتورة: ${esc(x.invoice)||'بدون رقم'}</b><br>إجمالي البيع: ${fmt(x.amount)}<br>المستلم من المكتب: ${fmt(x.received)}<br><span class="${x.remaining?'warn':'ok'}">${x.remaining?'الباقي عند المكتب: '+fmt(x.remaining):'مستلمة بالكامل'}</span></div>`).join(''):'لا توجد فواتير';
+ $('officeList').innerHTML=a.length?a.map(x=>`<div class="item"><b>فاتورة: ${esc(x.invoice)||'بدون رقم'}</b><br>إجمالي البيع: ${fmt(x.amount)}<br>المستلم من المكتب: ${fmt(x.received)}<br><span class="${x.remaining?'warn':'ok'}">${x.remaining?'الباقي عند المكتب: '+fmt(x.remaining):'مستلمة بالكامل'}</span><div style="margin-top:7px"><button class="primary" style="width:auto;padding:8px 12px" onclick="editOffice(${x.id})">✏️ تعديل</button></div></div>`).join(''):'لا توجد فواتير';
 }
 $('salesSearch').oninput=salesList;$('officeSearch').oninput=officeList;
 
 function simpleList(type,id){
- const a=db[type];$(id).innerHTML=a.length?a.map(x=>`<div class="item">${esc(x.date)} — ${esc(x.type)} — ${fmt(x.amount)}${x.qty?' — العدد: '+x.qty:''}</div>`).join(''):'لا توجد عمليات';
+ const a=db[type];
+ $(id).innerHTML=a.length?a.map(x=>`<div class="item"><div>${esc(x.date)} — <b>${esc(x.type)}</b> — <b>${fmt(x.amount)}</b>${x.qty?' — العدد: '+x.qty:''}</div><div style="margin-top:7px;display:flex;gap:7px"><button class="primary" style="width:auto;padding:8px 12px" onclick="editSimple('${type}',${x.id})">✏️ تعديل</button><button class="primary" style="width:auto;padding:8px 12px;background:#991b1b" onclick="deleteItem('${type}',${x.id})">🗑️ حذف</button></div></div>`).join(''):'لا توجد عمليات';
 }
+function deleteItem(type,id){
+ if(!confirm("متأكد تبي تحذف السجل؟"))return;
+ db[type]=db[type].filter(x=>x.id!==id);save();render();
+}
+function editSale(id){
+ const x=db.sales.find(v=>v.id===id);if(!x)return;
+ const date=prompt("التاريخ (YYYY-MM-DD):",x.date);if(date===null)return;
+ const type=prompt("نوع البيع:",x.type);if(type===null)return;
+ const amount=Number(prompt("إجمالي مبلغ البيع:",x.amount));if(!Number.isFinite(amount)||amount<0)return alert("المبلغ غير صحيح");
+ const received=Number(prompt("المبلغ المستلم:",x.received));if(!Number.isFinite(received)||received<0||received>amount)return alert("المبلغ المستلم غير صحيح");
+ const invoice=prompt("رقم الفاتورة:",x.invoice||"");if(invoice===null)return;
+ x.date=date||x.date;x.type=type||"بيع";x.amount=amount;x.received=received;x.remaining=+(amount-received).toFixed(3);x.invoice=invoice;
+ save();render();
+}
+function editSimple(type,id){
+ const x=db[type].find(v=>v.id===id);if(!x)return;
+ const date=prompt("التاريخ (YYYY-MM-DD):",x.date);if(date===null)return;
+ const label=type==="expenses"?"نوع المصروف":type==="maintenance"?"نوع الصيانة":"نوع القرقور";
+ const name=prompt(label+":",x.type);if(name===null)return;
+ const amount=Number(prompt("المبلغ:",x.amount));if(!Number.isFinite(amount)||amount<0)return alert("المبلغ غير صحيح");
+ x.date=date||x.date;x.type=name||type;x.amount=amount;
+ if(type==="traps"){const qty=Number(prompt("العدد:",x.qty||0));if(!Number.isFinite(qty)||qty<0)return alert("العدد غير صحيح");x.qty=qty}
+ save();render();
+}
+function editOffice(id){editSale(id)}
 function render(){
  const s=db.sales.reduce((n,x)=>n+(Number(x.amount)||0),0),e=db.expenses.reduce((n,x)=>n+(Number(x.amount)||0),0),m=db.maintenance.reduce((n,x)=>n+(Number(x.amount)||0),0),t=db.traps.reduce((n,x)=>n+(Number(x.amount)||0),0);
  $('salesTotal').textContent=fmt(s);$('expensesTotal').textContent=fmt(e+t);$('maintenanceTotal').textContent=fmt(m);$('profitTotal').textContent=fmt(s-e-m-t);
