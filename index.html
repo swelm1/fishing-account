@@ -82,7 +82,8 @@ input{width:100%;padding:11px;margin:6px 0 10px;border:1px solid #cbd5e1;border-
 <label>إجمالي مبلغ البيع</label><input id="saleAmount" type="number" step=".001" min="0">
 <label>المبلغ المستلم</label><input id="saleReceived" type="number" step=".001" min="0">
 <label>رقم الفاتورة</label><input id="saleInvoice" placeholder="رقم الفاتورة">
-<button class="primary" id="addSale">إضافة بيع</button>
+<button class="primary" id="addSale">إضافة بيع</button><div id="cloudSaveStatus" style="margin-top:8px;color:#64748b;font-size:13px"></div>
+<div style="margin-top:5px;color:#94a3b8;font-size:12px">الحفظ السحابي يحتاج ربط المشروع ببيانات Supabase الحالية.</div>
 </div>
 <div class="panel"><label>بحث برقم الفاتورة</label><input id="salesSearch" placeholder="رقم الفاتورة"><div id="salesList"></div></div>
 </section>
@@ -114,7 +115,14 @@ input{width:100%;padding:11px;margin:6px 0 10px;border:1px solid #cbd5e1;border-
 </section>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+/* ضع بيانات مشروع Supabase الموجود عندك هنا فقط إذا لم تكن مضمّنة في النسخة الأصلية. */
+const SUPABASE_URL = window.SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
+window.supabaseClient = (SUPABASE_URL && SUPABASE_ANON_KEY)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
 const KEY='fishing_accounts_final_v1';
 let db=JSON.parse(localStorage.getItem(KEY)||'{"sales":[],"expenses":[],"maintenance":[],"traps":[]}');
 const $=id=>document.getElementById(id);
@@ -130,11 +138,29 @@ function showTab(id){
 }
 document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>showTab(btn.dataset.tab)));
 
-function addSale(){
- const amount=Number($('saleAmount').value)||0, received=Number($('saleReceived').value)||0;
- if(!amount || received<0 || received>amount){alert('تأكد من مبلغ البيع والمبلغ المستلم');return}
- db.sales.unshift({id:Date.now(),date:$('saleDate').value,type:$('saleType').value||'بيع',amount,received,remaining:+(amount-received).toFixed(3),invoice:$('saleInvoice').value});
- save();clearSale();render();
+async function addSale(){
+ const date=$('saleDate').value || new Date().toISOString().slice(0,10);
+ const type=$('saleType').value.trim();
+ const amount=Number($('saleAmount').value||0);
+ const received=Number($('saleReceived').value||0);
+ const invoice=$('saleInvoice').value.trim();
+ if(!type || amount<=0 || !invoice){alert('عبّ البيانات الأساسية: نوع البيع، إجمالي المبلغ، ورقم الفاتورة.');return}
+ const row={invoice_number:invoice,type,sale_amount:amount,received_amount:received,remaining_amount:+(amount-received).toFixed(3),date,record_type:'بيع'};
+ $('cloudSaveStatus').textContent='⏳ جاري الحفظ...';
+ try{
+   if(!window.supabaseClient) throw new Error('لم يتم ربط Supabase بعد');
+   const {data,error}=await window.supabaseClient.from('fishing_account').insert(row).select().single();
+   if(error) throw error;
+   db.sales.push({...row,id:data?.Id||data?.id||Date.now()});
+   save();
+   $('cloudSaveStatus').textContent='✅ تم الحفظ في قاعدة البيانات';
+   alert('تم حفظ الفاتورة بنجاح ✅');
+   clearSale();
+   renderAll();
+ }catch(e){
+   $('cloudSaveStatus').textContent='❌ لم يتم الحفظ في Supabase';
+   alert('لم يتم الحفظ.\n\n'+(e.message||e));
+ }
 }
 function clearSale(){
   ['saleType','saleAmount','saleReceived','saleInvoice'].forEach(id=>$(id).value='');
