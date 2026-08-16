@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>حسابات الصيد</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#0f172a}
+header{background:#0f172a;color:white;padding:22px 16px}main{max-width:760px;margin:auto;padding:12px}
+nav{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.tab{border:0;border-radius:10px;padding:12px 5px;background:white;font-weight:bold;cursor:pointer}
+.tab.active{background:#0f172a;color:white}section{display:none}.active-section{display:block}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}.card,.panel{background:white;border-radius:15px;padding:15px;margin-bottom:12px}
+.num{font-size:21px;font-weight:800;margin-top:6px}label{font-size:13px;color:#475569}
+input{width:100%;padding:11px;margin:6px 0 10px;border:1px solid #cbd5e1;border-radius:9px;font-size:15px}
+.primary{width:100%;border:0;border-radius:9px;background:#0f172a;color:white;padding:12px;font-weight:bold;cursor:pointer}
+.item{padding:12px 0;border-top:1px solid #e2e8f0;line-height:1.8}.warn{color:#92400e}.ok{color:#166534}
+@media(max-width:430px){.tab{font-size:12px}}
+</style>
+</head>
+<body>
+<header><h1>🎣 حسابات الصيد</h1><div>المزاد والمكتب والمصروفات والصيانة والقراقير</div></header>
+<main>
+<nav>
+<button class="tab active" data-tab="home">الرئيسية</button>
+<button class="tab" data-tab="sales">🔨 المزاد</button>
+<button class="tab" data-tab="office">🏢 المكتب</button>
+<button class="tab" data-tab="expenses">💸 المصروفات</button>
+<button class="tab" data-tab="maintenance">🔧 الصيانة</button>
+<button class="tab" data-tab="traps">🪤 القراقير</button>
+</nav>
+
+<section id="home" class="active-section">
+<div class="cards">
+<div class="card">إجمالي المبيعات<div class="num" id="salesTotal">0.000 د.ك</div></div>
+<div class="card">المصروفات + القراقير<div class="num" id="expensesTotal">0.000 د.ك</div></div>
+<div class="card">الصيانة<div class="num" id="maintenanceTotal">0.000 د.ك</div></div>
+<div class="card">صافي الربح<div class="num" id="profitTotal">0.000 د.ك</div></div>
+</div>
+
+<div class="panel">
+<h3>💾 النسخة الاحتياطية</h3>
+<p>احفظ نسخة من جميع الحسابات على جهازك، واسترجعها لاحقاً إذا احتجت.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<button class="primary" id="backupBtn">💾 حفظ نسخة</button>
+<label style="background:#0f172a;color:#fff;padding:12px;border-radius:9px;text-align:center;font-weight:bold;cursor:pointer">
+📂 استرجاع نسخة
+<input id="restoreFile" type="file" accept=".json,application/json" style="display:none">
+</label>
+</div>
+</div>
+</section>
+
+<section id="sales">
+<div class="panel"><h2>🔨 المزاد</h2>
+<label>التاريخ</label><input id="saleDate" type="date">
+<label>نوع البيع</label><input id="saleType" placeholder="نوع البيع">
+<label>إجمالي مبلغ البيع</label><input id="saleAmount" type="number" step=".001" min="0">
+<label>المبلغ المستلم</label><input id="saleReceived" type="number" step=".001" min="0">
+<label>رقم الفاتورة</label><input id="saleInvoice" placeholder="رقم الفاتورة">
+<button class="primary" id="addSale">إضافة بيع</button>
+</div>
+<div class="panel"><label>بحث برقم الفاتورة</label><input id="salesSearch" placeholder="رقم الفاتورة"><div id="salesList"></div></div>
+</section>
+
+<section id="office">
+<div class="panel"><h2>🏢 المكتب</h2>
+<div class="cards">
+<div class="card">إجمالي الفواتير<div class="num" id="officeCount">0</div></div>
+<div class="card">المستلم من المكتب<div class="num" id="officeReceived">0.000 د.ك</div></div>
+<div class="card">الباقي عند المكتب<div class="num" id="officeRemaining">0.000 د.ك</div></div>
+<div class="card">غير مستلمة بالكامل<div class="num" id="officeUnpaid">0</div></div>
+</div></div>
+<div class="panel"><label>بحث برقم الفاتورة</label><input id="officeSearch" placeholder="رقم الفاتورة"><div id="officeList"></div></div>
+</section>
+
+<section id="expenses">
+<div class="panel"><h2>💸 المصروفات</h2><input id="expenseDate" type="date"><input id="expenseType" placeholder="نوع المصروف"><input id="expenseAmount" type="number" step=".001" min="0" placeholder="المبلغ"><button class="primary" id="addExpense">إضافة مصروف</button></div>
+<div class="panel" id="expensesList"></div>
+</section>
+
+<section id="maintenance">
+<div class="panel"><h2>🔧 الصيانة</h2><input id="maintenanceDate" type="date"><input id="maintenanceType" placeholder="نوع الصيانة"><input id="maintenanceAmount" type="number" step=".001" min="0" placeholder="المبلغ"><button class="primary" id="addMaintenance">إضافة صيانة</button></div>
+<div class="panel" id="maintenanceList"></div>
+</section>
+
+<section id="traps">
+<div class="panel"><h2>🪤 القراقير</h2><input id="trapDate" type="date"><input id="trapType" placeholder="نوع القرقور"><input id="trapQty" type="number" min="1" placeholder="العدد"><input id="trapAmount" type="number" step=".001" min="0" placeholder="إجمالي المبلغ"><button class="primary" id="addTrap">إضافة شراء</button></div>
+<div class="panel" id="trapsList"></div>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL='https://melrwemddjxattimfgkn.supabase.co';
+const SUPABASE_KEY='sb_publishable_1Ch8X0L6L7ST881iauZd9A_Ia88VfXp';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+let db={sales:[],expenses:[],maintenance:[],traps:[]};
+const $=id=>document.getElementById(id);
+const fmt=n=>(Number(n)||0).toFixed(3)+' د.ك';
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+
+function rowToSale(x){
+  return {id:x.Id,date:x.date,type:x.type||'بيع',amount:Number(x.sale_amount)||0,received:Number(x.received_amount)||0,remaining:Number(x.remaining_amount)||0,invoice:x.invoice_number||'',image:x.invoice_image||''};
+}
+function rowToSimple(x){
+  return {id:x.Id,date:x.date,type:x.type||'',amount:Number(x.sale_amount)||0,qty:0,image:x.invoice_image||''};
+}
+
+async function loadDB(){
+  const {data,error}=await sb.from('fishing_account').select('*').order('Id',{ascending:false}).limit(2000);
+  if(error){console.error(error);alert('تعذر الاتصال بقاعدة البيانات: '+error.message);return;}
+  db={sales:[],expenses:[],maintenance:[],traps:[]};
+  (data||[]).forEach(x=>{
+    const rt=x.record_type;
+    if(rt==='بيع' || rt==='sale') db.sales.push(rowToSale(x));
+    else if(rt==='مصروف' || rt==='expense') db.expenses.push(rowToSimple(x));
+    else if(rt==='صيانة' || rt==='maintenance') db.maintenance.push(rowToSimple(x));
+    else if(rt==='قرقور' || rt==='trap') db.traps.push({...rowToSimple(x),qty:Number(x.qty)||0});
+    else if(x.invoice_number || Number(x.sale_amount)>0) db.sales.push(rowToSale(x));
+  });
+  render();
+}
+
+async function insertRow(payload){
+  const {error}=await sb.from('fishing_account').insert(payload);
+  if(error){alert('خطأ بالحفظ: '+error.message);return false;}
+  return true;
+}
+async function updateRow(id,payload){
+  const {error}=await sb.from('fishing_account').update(payload).eq('Id',id);
+  if(error){alert('خطأ بالتعديل: '+error.message);return false;}
+  return true;
+}
+async function deleteRow(id){
+  const {error}=await sb.from('fishing_account').delete().eq('Id',id);
+  if(error){alert('خطأ بالحذف: '+error.message);return false;}
+  return true;
+}
+
+function showTab(id){
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active-section'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  const sec=$(id),btn=document.querySelector('.tab[data-tab="'+id+'"]');
+  if(sec)sec.classList.add('active-section'); if(btn)btn.classList.add('active');
+  render();
+}
+document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>showTab(btn.dataset.tab)));
+
+async function addSale(){
+  const amount=Number($('saleAmount').value)||0, received=Number($('saleReceived').value)||0;
+  if(!amount || received<0 || received>amount){alert('تأكد من مبلغ البيع والمبلغ المستلم');return}
+  const ok=await insertRow({
+    invoice_number:$('saleInvoice').value.trim(),
+    type:$('saleType').value.trim()||'بيع',
+    sale_amount:amount,
+    received_amount:received,
+    remaining_amount:+(amount-received).toFixed(3),
+    invoice_image:null,
+    date:$('saleDate').value,
+    record_type:'بيع'
+  });
+  if(ok){clearSale();await loadDB();}
+}
+function clearSale(){['saleType','saleAmount','saleReceived','saleInvoice'].forEach(id=>$(id).value='')}
+$('addSale').addEventListener('click',addSale);
+
+async function addSimple(type,dateId,typeId,amountId,qtyId){
+  const amount=Number($(amountId).value)||0;if(!amount){alert('أدخل المبلغ');return}
+  const rt=type==='expenses'?'مصروف':type==='maintenance'?'صيانة':'قرقور';
+  const ok=await insertRow({
+    invoice_number:null,
+    type:$(typeId).value||rt,
+    sale_amount:amount,
+    received_amount:0,
+    remaining_amount:0,
+    invoice_image:null,
+    date:$(dateId).value,
+    record_type:rt
+  });
+  if(ok){$(amountId).value='';$(typeId).value='';if(qtyId)$(qtyId).value='';await loadDB();}
+}
+$('addExpense').onclick=()=>addSimple('expenses','expenseDate','expenseType','expenseAmount');
+$('addMaintenance').onclick=()=>addSimple('maintenance','maintenanceDate','maintenanceType','maintenanceAmount');
+$('addTrap').onclick=()=>addSimple('traps','trapDate','trapType','trapAmount','trapQty');
+
+function salesList(){
+  const q=$('salesSearch').value.trim();
+  const a=db.sales.filter(x=>String(x.invoice||'').includes(q));
+  $('salesList').innerHTML=a.length?a.map(x=>`<div class="item"><b>فاتورة: ${esc(x.invoice)||'بدون رقم'}</b><br>التاريخ: ${esc(x.date)}<br>النوع: ${esc(x.type)}<br>الإجمالي: ${fmt(x.amount)}<br>المستلم: ${fmt(x.received)}<br><span class="${x.remaining?'warn':'ok'}">${x.remaining?'الباقي عند المكتب: '+fmt(x.remaining):'تم استلام كامل المبلغ'}</span><div style="margin-top:7px;display:flex;gap:7px"><button class="primary" style="width:auto;padding:8px 12px" onclick="editSale(${x.id})">✏️ تعديل</button><button class="primary" style="width:auto;padding:8px 12px;background:#991b1b" onclick="deleteItem('sales',${x.id})">🗑️ حذف</button></div></div>`).join(''):'لا توجد فواتير';
+}
+function officeList(){
+  const q=$('officeSearch').value.trim();
+  const a=db.sales.filter(x=>String(x.invoice||'').includes(q));
+  $('officeCount').textContent=a.length;
+  $('officeReceived').textContent=fmt(a.reduce((n,x)=>n+(Number(x.received)||0),0));
+  $('officeRemaining').textContent=fmt(a.reduce((n,x)=>n+(Number(x.remaining)||0),0));
+  $('officeUnpaid').textContent=a.filter(x=>(Number(x.remaining)||0)>0).length;
+  $('officeList').innerHTML=a.length?a.map(x=>`<div class="item"><b>فاتورة: ${esc(x.invoice)||'بدون رقم'}</b><br>إجمالي البيع: ${fmt(x.amount)}<br>المستلم من المكتب: ${fmt(x.received)}<br><span class="${x.remaining?'warn':'ok'}">${x.remaining?'الباقي عند المكتب: '+fmt(x.remaining):'مستلمة بالكامل'}</span><div style="margin-top:7px"><button class="primary" style="width:auto;padding:8px 12px" onclick="editOffice(${x.id})">✏️ تعديل</button></div></div>`).join(''):'لا توجد فواتير';
+}
+$('salesSearch').oninput=salesList;$('officeSearch').oninput=officeList;
+
+function simpleList(type,id){
+  const a=db[type];
+  $(id).innerHTML=a.length?a.map(x=>`<div class="item"><div>${esc(x.date)} — <b>${esc(x.type)}</b> — <b>${fmt(x.amount)}</b>${x.qty?' — العدد: '+x.qty:''}</div><div style="margin-top:7px;display:flex;gap:7px"><button class="primary" style="width:auto;padding:8px 12px" onclick="editSimple('${type}',${x.id})">✏️ تعديل</button><button class="primary" style="width:auto;padding:8px 12px;background:#991b1b" onclick="deleteItem('${type}',${x.id})">🗑️ حذف</button></div></div>`).join(''):'لا توجد عمليات';
+}
+async function deleteItem(type,id){
+  if(!confirm("متأكد تبي تحذف السجل؟"))return;
+  if(await deleteRow(id))await loadDB();
+}
+async function editSale(id){
+  const x=db.sales.find(v=>v.id===id);if(!x)return;
+  const date=prompt("التاريخ (YYYY-MM-DD):",x.date);if(date===null)return;
+  const type=prompt("نوع البيع:",x.type);if(type===null)return;
+  const amount=Number(prompt("إجمالي مبلغ البيع:",x.amount));if(!Number.isFinite(amount)||amount<0)return alert("المبلغ غير صحيح");
+  const received=Number(prompt("المبلغ المستلم:",x.received));if(!Number.isFinite(received)||received<0||received>amount)return alert("المبلغ المستلم غير صحيح");
+  const invoice=prompt("رقم الفاتورة:",x.invoice||"");if(invoice===null)return;
+  const ok=await updateRow(id,{date:date||x.date,type:type||"بيع",sale_amount:amount,received_amount:received,remaining_amount:+(amount-received).toFixed(3),invoice_number:invoice,record_type:'بيع'});
+  if(ok)await loadDB();
+}
+async function editSimple(type,id){
+  const x=db[type].find(v=>v.id===id);if(!x)return;
+  const date=prompt("التاريخ (YYYY-MM-DD):",x.date);if(date===null)return;
+  const label=type==="expenses"?"نوع المصروف":type==="maintenance"?"نوع الصيانة":"نوع القرقور";
+  const name=prompt(label+":",x.type);if(name===null)return;
+  const amount=Number(prompt("المبلغ:",x.amount));if(!Number.isFinite(amount)||amount<0)return alert("المبلغ غير صحيح");
+  const rt=type==='expenses'?'مصروف':type==='maintenance'?'صيانة':'قرقور';
+  const ok=await updateRow(id,{date:date||x.date,type:name||rt,sale_amount:amount,received_amount:0,remaining_amount:0,record_type:rt});
+  if(ok)await loadDB();
+}
+function editOffice(id){editSale(id)}
+function render(){
+  const s=db.sales.reduce((n,x)=>n+(Number(x.amount)||0),0),e=db.expenses.reduce((n,x)=>n+(Number(x.amount)||0),0),m=db.maintenance.reduce((n,x)=>n+(Number(x.amount)||0),0),t=db.traps.reduce((n,x)=>n+(Number(x.amount)||0),0);
+  $('salesTotal').textContent=fmt(s);$('expensesTotal').textContent=fmt(e+t);$('maintenanceTotal').textContent=fmt(m);$('profitTotal').textContent=fmt(s-e-m-t);
+  salesList();officeList();simpleList('expenses','expensesList');simpleList('maintenance','maintenanceList');simpleList('traps','trapsList');
+}
+function backupData(){
+  const payload={app:"حسابات الصيد",version:2,savedAt:new Date().toISOString(),data:db};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="حسابات_الصيد_نسخة_احتياطية_"+new Date().toISOString().slice(0,10)+".json";
+  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+async function restoreData(file){
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async()=>{
+    try{
+      const payload=JSON.parse(reader.result),data=payload.data||payload;
+      if(!data||!Array.isArray(data.sales)||!Array.isArray(data.expenses)||!Array.isArray(data.maintenance)||!Array.isArray(data.traps))throw new Error("invalid");
+      if(!confirm("استرجاع النسخة سيضيف البيانات إلى قاعدة البيانات. هل تريد المتابعة؟"))return;
+      const all=[];
+      data.sales.forEach(x=>all.push({invoice_number:x.invoice||null,type:x.type||'بيع',sale_amount:Number(x.amount)||0,received_amount:Number(x.received)||0,remaining_amount:Number(x.remaining)||0,invoice_image:x.image||null,date:x.date,record_type:'بيع'}));
+      data.expenses.forEach(x=>all.push({invoice_number:null,type:x.type||'مصروف',sale_amount:Number(x.amount)||0,received_amount:0,remaining_amount:0,invoice_image:null,date:x.date,record_type:'مصروف'}));
+      data.maintenance.forEach(x=>all.push({invoice_number:null,type:x.type||'صيانة',sale_amount:Number(x.amount)||0,received_amount:0,remaining_amount:0,invoice_image:null,date:x.date,record_type:'صيانة'}));
+      data.traps.forEach(x=>all.push({invoice_number:null,type:x.type||'قرقور',sale_amount:Number(x.amount)||0,received_amount:0,remaining_amount:0,invoice_image:null,date:x.date,record_type:'قرقور'}));
+      if(all.length){const {error}=await sb.from('fishing_account').insert(all);if(error)throw error;}
+      await loadDB();alert("تم استرجاع النسخة الاحتياطية إلى قاعدة البيانات ✅");
+    }catch(e){alert("تعذر الاسترجاع: "+(e.message||"الملف غير صالح"))}
+  };reader.readAsText(file);
+}
+$("backupBtn").addEventListener("click",backupData);
+$("restoreFile").addEventListener("change",e=>{restoreData(e.target.files[0]);e.target.value=""});
+document.querySelectorAll('input[type=date]').forEach(x=>x.value=new Date().toISOString().slice(0,10));
+loadDB();
+</script>
+</body>
+</html>
