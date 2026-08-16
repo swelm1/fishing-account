@@ -316,6 +316,7 @@ document.querySelectorAll('input[type=date]').forEach(x=>x.value=new Date().toIS
 render();
 </script>
 
+<script>
 async function loadAll(){
  setStatus("جاري تحميل البيانات...");
  const [sales,expenses,maintenance,traps]=await Promise.all([
@@ -335,5 +336,6 @@ async function loadAll(){
 }
 
 loadAll();
+</script>
 </body>
 </html>
